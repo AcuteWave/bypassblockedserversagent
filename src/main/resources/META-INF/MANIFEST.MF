@@ -1,2 +1,3 @@
 Manifest-Version: 1.0
 Premain-Class: ru.wave.bypassblockedservers.BypassBlockedServers
+Can-Retransform-Classes: true
