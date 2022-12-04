@@ -5,8 +5,10 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 
+import java.awt.*;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
+import java.net.URI;
 import java.security.ProtectionDomain;
 
 public class BypassBlockedServers implements ClassFileTransformer {
@@ -24,8 +26,8 @@ public class BypassBlockedServers implements ClassFileTransformer {
                     pool.appendClassPath(new ByteArrayClassPath(className, bytes));
                     CtClass ctClass = pool.get(className);
 
-                    setMethodBodyToFalse(ctClass, "isBlockedServerHostName");
-                    setMethodBodyToFalse(ctClass, "isBlockedServer");
+                    setMethodBodyToFalse(ctClass, "isBlockedServerHostName"); // patchy last versions
+                    setMethodBodyToFalse(ctClass, "isBlockedServer"); // остальные версии patchy и netty
 
                     return ctClass.toBytecode();
                 }
@@ -39,5 +41,17 @@ public class BypassBlockedServers implements ClassFileTransformer {
             CtMethod ctMethod = ctClass.getMethod(methodName, "(Ljava/lang/String;)Z");
             ctMethod.setBody("{ return false; }");
         } catch (Exception ignored) {}
+    }
+
+    /**
+     * Вызывается только при дабл клике по файлу или при открытии через консоль (java -jar)
+     *
+     * <p>Нужен чтобы открыть дураку страницу с гайдом об установке, потому что этот тупень не смог догадаться прочитать инструкцию
+     */
+    public static void main(String[] args) {
+        try {
+            Desktop.getDesktop().browse(new URI("https://mineland.net/how-to-login"));
+        } catch (Exception ignored) {}
+        System.exit(0);
     }
 }
